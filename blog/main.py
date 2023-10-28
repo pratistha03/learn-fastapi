@@ -1,26 +1,14 @@
-from turtle import title
-from fastapi import Depends, FastAPI
-
-from blog import models, schema
-from .database import SessionLocal, engine
-from sqlalchemy.orm import Session
-
+from fastapi import FastAPI
+from . import models
+from .database import engine
+from .routers import blog, user, authentication
 
 app = FastAPI()
 
 models.Base.metadata.create_all(bind=engine)
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+app.include_router(authentication.router)
+app.include_router(blog.router)
+app.include_router(user.router)
 
-@app.post("/blog")
-def create_blog(request:schema.Blog, db:Session = Depends(get_db)):
-    new_blog = models.Blog(title = request.title, body = request.body)
-    db.add(new_blog) #to add blog to db 
-    db.commit() #execute
-    db.refresh(new_blog) # to reruen newly created blog
-    return new_blog
+
