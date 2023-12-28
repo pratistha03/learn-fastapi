@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FCM Token Generator</title>
+  <!-- Add Firebase SDK script -->
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-messaging.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+  <!-- Your HTML content goes here -->
+
+  <!-- You can display the FCM token or use it as needed in your application -->
+  <script>
+    // Initialize Firebase
+    var firebaseConfig = {
+      apiKey: "AIzaSyAUS0a_UU4zj1mdSlGRNVGRGoZTp4fV_9k",
+      authDomain: "fastapiapp-b91d5.firebaseapp.com",
+      projectId: "fastapiapp-b91d5",
+      storageBucket: "fastapiapp-b91d5.appspot.com",
+      messagingSenderId: "685850753478",
+      appId: "1:685850753478:web:d65193ff653b4f3346dac7",
+      measurementId: "G-1H39JZVN09"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    // Retrieve Firebase Messaging object.
+    const messaging = firebase.messaging();
+
+    // Register the service worker
+    navigator.serviceWorker.register('firebase-messaging-sw.js')
+      .then((registration) => {
+        console.log('Service Worker registered with scope:', registration.scope);
+
+        // Get FCM token
+        messaging.getToken({ vapidKey: 'BL6TxbZLnUWa7IwxIWH4HqKl3SXc96YBrqoq3H5GXzdC0cFUm0C7dXKLlgkQvqPfEJH56hhabsNIsm4J23YMtVY' })
+          .then((currentToken) => {
+            if (currentToken) {
+              console.log('FCM Token:', currentToken);
+              // Send the token to your server here.
+              sendToServer(currentToken);
+            } else {
+              console.log('No registration token available.');
+            }
+          })
+          .catch((err) => {
+            console.log('An error occurred while retrieving token. ', err);
+          });
+      })
+      .catch((error) => {
+        console.error('Service Worker registration failed:', error);
+      });
+
+    // Handle incoming messages.
+    messaging.onMessage((payload) => {
+      console.log('Message received. ', payload);
+      // Customize notification here.
+      const notificationTitle = payload.notification.title;
+      const notificationOptions = {
+        body: payload.notification.body,
+        icon: payload.notification.icon
+      };
+
+      const notification = new Notification(notificationTitle, notificationOptions);
+    });
+
+    // Function to send the FCM token to your server (replace this with your implementation)
+    function sendToServer(token) {
+      // Implement your logic to send the token to your server
+      console.log('Sending FCM Token to server:', token);
+    }
+  </script>
+</body>
+</html>

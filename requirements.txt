@@ -1,0 +1,7 @@
+fastapi[all]
+firebase
+pyrebase4
+firebase_admin
+mysqlclient
+SQLAlchemy
+pydantic
